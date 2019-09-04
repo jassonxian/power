@@ -1,0 +1,59 @@
+image: harbor.socmap.org/library/node:v8.15.1
+stages:
+  - build
+  - deploy1
+  - deploy2
+
+variables:
+  YOUR_PROJECT_NAME: passport-client-web
+  BACKEND_OR_FRONTEND: frontend  #用小写
+  RUNNER1: 192.168.200.232
+  DEPLOY_MACHINE1: 192.168.199.241
+  DEPLOY_MACHINE2: 192.168.199.135
+
+build:
+  stage: build
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - npm install -g yarn && yarn --ignore-scripts && yarn build
+    - mkdir -p ~/se
+    - tar -zcvf ~/se/$YOUR_PROJECT_NAME-$CI_PIPELINE_ID.tar.gz dist
+    - rsync -vz -e "ssh -o PubkeyAuthentication=yes -o stricthostkeychecking=no" ~/se/$YOUR_PROJECT_NAME-$CI_PIPELINE_ID.tar.gz root@$RUNNER1:/home/ubuntu/ready/
+    - echo "BUILD SUCCESS! "
+  tags:
+    - devops2
+  only:
+    - master
+
+deploy1:
+  stage: deploy1
+  script:
+    - tar -xzvf /home/ubuntu/ready/$YOUR_PROJECT_NAME-$CI_PIPELINE_ID.tar.gz -C /home/ubuntu/ready/
+    - CURRTIME=`date +%Y%m%d%H%M%S`
+    - ssh -o PubkeyAuthentication=yes -o stricthostkeychecking=no soc@$DEPLOY_MACHINE1 "mv /home/workspace/www /home/backup/www.$CURRTIME.bak"
+    - rsync -vaz -r -e "ssh -o PubkeyAuthentication=yes -o stricthostkeychecking=no" /home/ubuntu/ready/dist/* soc@$DEPLOY_MACHINE1:/home/workspace/www/
+    - rm -rf /home/ubuntu/ready/dist/
+    - echo "DEPLOY TO $DEPLOY_MACHINE1 SUCCESS!"
+  tags:
+    - devops1_shell
+  only:
+    - master
+    
+deploy2:
+  stage: deploy2
+  script:
+    - tar -xzvf /home/ubuntu/ready/$YOUR_PROJECT_NAME-$CI_PIPELINE_ID.tar.gz -C /home/ubuntu/ready/
+    - CURRTIME=`date +%Y%m%d%H%M%S`
+    - ssh -o PubkeyAuthentication=yes -o stricthostkeychecking=no soc@$DEPLOY_MACHINE2 "mv /home/workspace/www /home/backup/www.$CURRTIME.bak"
+    - rsync -vaz -r -e "ssh -o PubkeyAuthentication=yes -o stricthostkeychecking=no" /home/ubuntu/ready/dist/* soc@$DEPLOY_MACHINE2:/home/workspace/www/
+    - rm -rf /home/ubuntu/ready/dist/
+    - echo "DEPLOY TO $DEPLOY_MACHINE2 SUCCESS!"
+  tags:
+    - devops1_shell
+  only:
+    - master
