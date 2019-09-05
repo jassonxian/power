@@ -56,9 +56,9 @@ export default {
   },
   proxy: {
     '/v1/': {
-      target: 'http://192.168.199.241/',
+      target: 'https://sax.aixinjituan.com/Api',
       changeOrigin: true,
-      // pathRewrite: { '^/api': '' },
+      pathRewrite: { '^/v1': '' },
     },
     '/cas/serviceValidate': {
       target: 'http://192.168.199.241/v1',
