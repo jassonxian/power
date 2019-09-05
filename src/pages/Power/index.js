@@ -5,6 +5,20 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 const { Search } = Input;
 
 export default () => {
+
+  const translation = (text) => {
+    const numArr = [`0x${text.slice(0,2)}`, `0x${text.slice(2,4)}`];
+    console.log(numArr, Number(numArr[0]).toString(10), Number(numArr[1]).toString(10));
+    return Number(Number(numArr[0]).toString(10)) + Number(Number(numArr[1]).toString(10))
+  };
+  const newStr = '02 11 00f0 00a5 20 20 20 003c 80';
+  const newArr = newStr.split(' ');
+  const newObj = {
+    name: Number(newArr[0]),
+    floor: Number(Number(`0x${newArr[1]}`).toString(10)),
+    v: translation(newArr[2])
+  };
+  console.log(newArr, newObj);
   const showAlert = v => {
     if (v === 'ing') {
       return (
