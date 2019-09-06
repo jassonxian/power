@@ -58,7 +58,7 @@ const Register = ({ form, dispatch, login, loading }) => {
   };
   return (
     <div className={styles.main}>
-      <div className={styles.title}>XXXXXXXX系统</div>
+      <div className={styles.title}>哈啰充电管理系统</div>
       <div>
         <div className={styles.logo} style={{ float: 'left', width: '50%' }}>
           注&nbsp;&nbsp;&nbsp;&nbsp;册

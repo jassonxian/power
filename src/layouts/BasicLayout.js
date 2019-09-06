@@ -116,7 +116,7 @@ class BasicLayout extends React.PureComponent {
       defaultMessage: currRouterData.name,
     });
 
-    return `${pageName} - XXX系统`;
+    return `${pageName} - 哈啰充电管理系统`;
   };
 
   getLayoutStyle = () => {
