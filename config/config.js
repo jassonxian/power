@@ -56,7 +56,7 @@ export default {
   },
   proxy: {
     '/v1/': {
-      target: 'https://sax.aixinjituan.com/Api',
+      target: 'https://sax.aixinjituan.com/Api/shop',
       changeOrigin: true,
       pathRewrite: { '^/v1': '' },
     },

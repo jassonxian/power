@@ -34,6 +34,10 @@ functions/mock
 .umi
 .umi-production
 
+#.tar
+*.tar
+*.tar.gz
+
 # screenshot
 screenshot
 .firebase
